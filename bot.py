@@ -10,6 +10,7 @@ from urllib2 import urlopen, URLError, HTTPError
 import random
 
 import settings
+from model import Model
 
 #TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
 TELEGRAM_TOKEN = '529411976:AAGkvuxGf9YRSI_Hy_HxWUV488Mvk-o6hGo'
@@ -21,8 +22,10 @@ class Bot:
     def __init__(self):
         self.last_command = None
         self.waiting = False
+        self.team = {}
+        self.resume= {}
         self.uploaded_audio = 0
-        self.beat_file_name = 'beat'+str(random.randrange(1,8))
+        self.model = Model()
 
         self.logger = logging.getLogger(__name__)
 
@@ -31,11 +34,14 @@ class Bot:
 
         help_handler = CommandHandler('help', self.help)
         newteam_handler = CommandHandler('newteam', self.newteam)
+        search_handler = CommandHandler('search', self.search)
+        cancel = CommandHandler('cancel', self.search)
         message_handler = MessageHandler(Filters.text, self.text_handler)
 
         self.dispatcher.add_handler(help_handler)
         self.dispatcher.add_handler(message_handler)
         self.dispatcher.add_handler(newteam_handler)
+        self.dispatcher.add_handler(search_handler)
 
 
         self.dispatcher.add_error_handler(self.error)
@@ -45,21 +51,65 @@ class Bot:
 
     def error(self, bot, update, error):
         self.logger.warning('Update "%s" caused error "%s"', update, error)
+    def cancel(self, bot, update, error):
+        self.last_command = 'cancel'
 
     def text_handler(self, bot, update):
         print 'Text Handler'
         print self.last_command
         chat_id = update.message.chat_id
-        text = update.message.text.lower().split()
-        message = bot.send_message(text="Cейчас все будет...",
+        text = update.message.text.lower()
+        if self.last_command == 'newteam':
+            if self.data_type == 'name':
+                self.data_type = 'idea'
+            elif self.data_type == 'idea':
+                self.data_type = 'people'
+            elif self.data_type == 'people':
+                text = text.split(',')
+                print "He needs %i people"%len(text)
+                self.data_type = 'budget'
+            elif self.data_type == 'budget':
+                self.data_type = 'done'
+                self.last_command = 'done'
+                self.team[self.data_type] = text
+                self.model.find(self.team)
+            self.team[self.data_type] = text
+            print self.team
+            message=bot.send_message(text=settings.CREATE_TEAM[self.data_type],
+                                   chat_id=chat_id)
+        elif self.last_command == 'search':
+            if self.data_type == 'name':
+                self.data_type = 'about'
+            elif self.data_type == 'about':
+                self.data_type = 'passion'
+            elif self.data_type == 'passion':
+                self.data_type = 'schedule'
+            elif self.data_type == 'schedule':
+                self.data_type = 'link'
+            elif self.data_type == 'link':
+                self.data_type = 'done'
+            self.resume[self.data_type] = text
+            print self.resume
+            message=bot.send_message(text=settings.SEARCH_TEAM[self.data_type],
                                    chat_id=chat_id)
 
+    def search(self,bot,update):
+        print ' Search Handler'
+        self.last_command = 'search'
+        self.data_type= 'name'
+        chat_id = update.message.chat_id
+        text = update.message.text.lower().split()
+        message = bot.send_message(text="Найдем вам тимлида! Как Вас зовут?",
+                                   chat_id=chat_id)
     def newteam(self,bot,update):
         print 'New Team Handler'
         self.last_command = 'newteam'
+        self.data_type= 'name'
         chat_id = update.message.chat_id
         text = update.message.text.lower().split()
-        message = bot.send_message(text="Создаем новую команду",
+        message = bot.send_message(text="Создаем новую команду! \cancel чтобы\
+                                   отментить \n Как\
+                                   назывется проект? ",
                                    chat_id=chat_id)
 
     @staticmethod
