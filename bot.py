@@ -60,6 +60,7 @@ class Bot:
         chat_id = update.message.chat_id
         text = update.message.text.lower()
         if self.last_command == 'newteam':
+            self.team[self.data_type] = text
             if self.data_type == 'name':
                 self.data_type = 'idea'
             elif self.data_type == 'idea':
@@ -67,17 +68,17 @@ class Bot:
             elif self.data_type == 'people':
                 text = text.split(',')
                 print "He needs %i people"%len(text)
+                self.team[self.data_type] = text
                 self.data_type = 'budget'
             elif self.data_type == 'budget':
                 self.data_type = 'done'
                 self.last_command = 'done'
-                self.team[self.data_type] = text
                 self.model.find(self.team)
-            self.team[self.data_type] = text
             print self.team
             message=bot.send_message(text=settings.CREATE_TEAM[self.data_type],
                                    chat_id=chat_id)
         elif self.last_command == 'search':
+            self.resume[self.data_type] = text
             if self.data_type == 'name':
                 self.data_type = 'about'
             elif self.data_type == 'about':
@@ -88,7 +89,6 @@ class Bot:
                 self.data_type = 'link'
             elif self.data_type == 'link':
                 self.data_type = 'done'
-            self.resume[self.data_type] = text
             print self.resume
             message=bot.send_message(text=settings.SEARCH_TEAM[self.data_type],
                                    chat_id=chat_id)
