@@ -75,7 +75,7 @@ class Bot:
                 self.last_command = 'done'
                 self.model.find(self.team)
                 message=bot.send_message(text="Ваш персональный адрес проекта:\n "+
-                                     'http://10.10.188.11:3000/'+self.team['name'],
+                                     'http://http://52.166.219.7:3000/'+self.team['name'],
                                    chat_id=chat_id)
             print self.team
             message=bot.send_message(text=settings.CREATE_TEAM[self.data_type],
