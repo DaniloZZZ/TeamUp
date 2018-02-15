@@ -1,0 +1,46 @@
+.App {
+  text-align: center;
+}
+
+.inactive{
+	color:#333;
+}
+.member{
+	font-family: 'Alegreya', sans-serif;
+	text-align: left;
+	margin:10px 10px;
+	min-height: 300px;
+	max-height: 100px;
+	overflow: hidden;
+	background-color: #F6FAFA;
+	border: 1px solid #e5e5e5;
+	font-size:16px;
+}
+.desc{
+	max-height:80px;
+	overflow:hidden;
+	margin-bottom:10px;
+}
+.job{
+	margin:12px;
+	margin-left:2px;
+	font-size:18px;
+}
+
+p {
+	margin:5px;
+}
+.App-header {
+  background-color: #222;
+  height: 50px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
