@@ -71,7 +71,7 @@ class App extends Component {
 		</header>
 		<div>
 			<h3>{this.name}</h3>
-			<h3>{this.state.keys}</h3>
+			<h3>{String(this.state.keys)}</h3>
 			{this.state.keys.map((k,i)=>{
 				if (team[k].length>0){
 					return(
