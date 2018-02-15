@@ -8,3 +8,17 @@ Our platform is
 * user-friendly
 * fleaxible
 
+to start:
+
+### front
+run npm i in ./web
+install react@15.4.2 react-dom@15.4.2 and axios
+
+### back
+pip install telegram-bot pandas nltk gensim ...
+
+## to start:
+chmod +x ./start.sh
+./start.sh
+
+
