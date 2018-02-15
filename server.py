@@ -10,7 +10,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 @cross_origin()
 def hello_world():
     team_name = request.args.get('team')
-    print team_name
+    print "Server: request for "+team_name
     try:
         #f  =  open("team_"+team_name+".json")
         f  =  open(settings.TEAMS_DIR+team_name+".json")

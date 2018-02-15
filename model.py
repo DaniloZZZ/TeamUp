@@ -20,13 +20,13 @@ def mapping(df):
 
 class Model:
     def __init__(self):
-        print "reading data"
+        print "Model: reading data"
         self.data = pd.read_json('res.json')
         self.answ = pd.read_csv('Answers-Data.csv',sep=';')
         self.ocean= pd.read_csv('ocean.csv',index_col='idx')
         self.sauce_id = 3614
         self.sauce_key = 'som2es26nn1ieugrdjlnfnv9vn'
-        print "done"
+        print "Model: done reading data"
 
     def filter(self,names):
         res = {}

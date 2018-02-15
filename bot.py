@@ -46,7 +46,7 @@ class Bot:
 
         self.dispatcher.add_error_handler(self.error)
 
-        print "starting "
+        print "Bot: start polling"
         self.updater.start_polling()
 
     def error(self, bot, update, error):
@@ -55,7 +55,7 @@ class Bot:
         self.last_command = 'cancel'
 
     def text_handler(self, bot, update):
-        print 'Text Handler'
+        print 'Bot: Text Handler'
         print self.last_command
         chat_id = update.message.chat_id
         text = update.message.text.lower()
