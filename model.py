@@ -3,9 +3,11 @@ import traceback
 import settings
 import pandas as pd
 import numpy as np
-import json,random
+import json,random,gensim
 import requests
 from operator import itemgetter
+from gensim.models import KeyedVectors
+from scipy.spatial.distance import cosine
 
 
 def mapping(df):
@@ -24,6 +26,7 @@ class Model:
         self.data = pd.read_json('res.json')
         self.answ = pd.read_csv('Answers-Data.csv',sep=';')
         self.ocean= pd.read_csv('ocean.csv',index_col='idx')
+        self.w2v= pd.read_csv('w2v.csv')
         self.sauce_id = 3614
         self.sauce_key = 'som2es26nn1ieugrdjlnfnv9vn'
         print "Model: done reading data"
@@ -56,10 +59,21 @@ class Model:
             dic = np.sum((mat[n]-mat[i])**2)
             oced.append(dic)
         oced =np.array(oced)
-        f= 0.5*f+0.5*oced
+        mat = self.w2v.as_matrix()
+        v= []
+        for i in range(l):
+            dic =cosine(mat[n],mat[i])
+            v.append(1./(0.5+dic))
+        v = np.array(v)
+        v/=max(v)
+        print mat.shape
+        print oced,v
+        k = 1./3.
+        f= k*f + k*oced + k*v
         new['f'] = f
         res= new.sort_values('f',ascending=False)
         return res.reset_index(drop=True)
+
 
     def find(self,team):
         members = self.filter(team['people'])
@@ -110,8 +124,31 @@ if __name__=='__main__':
         print i,vec
     df = pd.DataFrame(res)
     df.to_csv('ocean.csv')
+    goog = KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin.gz',
+                                      binary=True, limit=1500000)
+
+    res = []
+    for i in range(50):
+        text = model.answ.iloc[i]['QN1-about']
+        text += model.answ.iloc[i]['QN2-passion']
+        vec = np.zeros(300)
+        print i
+        ws = text.split()
+        j=0
+        sk = []
+        for w in ws:
+            if len(w)>2:
+                try:
+                    vec+=goog[w]
+                except:
+                    sk.append(w)
+                    j+=1
+        print "words total:%i skipped: %i"%(len(ws),j)
+        print sk
+        res.append(vec)
+        print i
+    df = pd.DataFrame(res)
+    df.to_csv('v2w.csv')
     '''
     model.filter([u' менеджер',u'юрист'])
-
-
 
